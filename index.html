@@ -1,115 +1,245 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜查詢系統</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>果彈Fun樂園排行榜</title>
 
-<style>
-    body {
-        font-family: sans-serif;
-        padding: 20px;
-    }
+    <style>
+        html{
+            font-size: 100%;
+        }
+        body {
+            font-family: 'Chiron GoRound TC', sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            padding: 20px 10px;
+            background-color: #efede5;
+            color: #428184;
+        }
+        .container {
+            max-width: 600px;   /* 你想限制的最大寬度 */
+            margin: 0 auto;     /* 自動左右置中 */
+            padding: 0 20px;    /* 手機版左右保留間距 */
+        }
 
-    h2 {
-        margin-bottom: 10px;
-    }
+        .h-text {
+            text-align: center;
+            width: auto;
+            margin: 5% auto;
+        }
 
-    .menu {
-        margin-bottom: 15px;
-    }
-    button {
-        margin: 3px;
-        padding: 8px 12px;
-        cursor: pointer;
-    }
+        .menu { 
+            display: flex;               /* 使用 Flex 置中 */
+            justify-content: center;     /* 水平置中 */
+            flex-wrap: nowrap;             /* 不夠寬自動換行 */
+            gap: 8px;                    /* 按鈕之間的距離 */
+            margin: auto;
+            max-width: 600px;            /* 避免在大螢幕拉太寬 */
+            padding: 5px 0;
+        }
+        .menu2 { 
+            display: none;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 8px;
+            margin: 5px auto;
+            margin-bottom: 10px;
+            max-width: 600px;
+            padding: 5px 0;
+        }
 
-    input {
-        padding: 6px;
-        margin-bottom: 10px;
-        width: 200px;
-    }
+        button {
+            font-family: 'Chiron GoRound TC', sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-size: small;
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top:10px;
-    }
+            padding: 8px 10px;
+            cursor: pointer;
+            color: #428184;
+            border: 1px solid #c8bda7;
+            background-color: white;
+            border-radius: 10px;
 
-    th, td {
-        border: 1px solid #ccc;  /* 垂直+水平線 */
+            white-space: nowrap;         /* 防止文字折行 */
+            
+            transition: background-color 0.1s, color 0.1s;
+        }
+
+        /* 高亮狀態 */
+        button.active {
+            background-color: #17c3B2;
+            color: white;
+            border-color: #13a496;
+        }
+        .input-c {
+            display: flex;
+            margin: 5px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            display: block;
+            width: 150px;
+            padding: 6px;
+            margin: auto;
+            border-color: #ccc;
+            border-style:dashed;
+            border-radius: 10px;
+        }
+
+        /* HTML: <div class="loader"></div> */
+        .loader {
+        width: 50px;
         padding: 8px;
-        text-align: center;       /* 置中 */
-        font-size: 16px;
-    }
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #17c3B2;
+        --_m: 
+            conic-gradient(#0000 10%,#000),
+            linear-gradient(#000 0 0) content-box;
+        -webkit-mask: var(--_m);
+                mask: var(--_m);
+        -webkit-mask-composite: source-out;
+                mask-composite: subtract;
+        animation: l3 1s infinite linear;
+        
+        margin: 20px auto;      /* 自動居中 */
+        display: none;
+        }
+        @keyframes l3 {to{transform: rotate(1turn)}}
 
-    th {
-        background-color: #f2f2f2;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top:10px;
+        }
+        .fade-in {
+            opacity: 0; /* 淡出後透明度為 0 */
+        }
+        .fade-in.show {
+            opacity: 1; /* 淡入後透明度為 1 */
+            transition: opacity 0.4s ease;
+        }
 
-    /* 三名上色 */
-    .rank-1 td { background-color: gold; }
-    .rank-2 td { background-color: silver; }
-    .rank-3 td { background-color: #cd7f32; } /* Bronze */
+        td {
+            border-bottom: 1px dashed #ccc;  /* 垂直+水平線 */
+            padding: 8px;
+            text-align: center;
+            font-size: 16px;
+            background-color: white;
+        }
+        .td-start{
+            border-left: 1px solid #ccc;
+        }
+        .td-end{
+            border-right: 1px solid #ccc;
+        }
+        th {
+            color: white;
+            background-color: #17C3B2;
+            padding: 8px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .th-start{
+            border-top-left-radius: 5px;
+        }
+        .th-end{
+            border-top-right-radius: 5px;
+        }
 
-</style>
+        /* 三名上色 */
+        .rank-1 td { color: #FE6D73; font-size: larger; font-weight: 600;}
+        .rank-2 td { color: #ff9d00;font-size: larger; font-weight: 600;}
+        .rank-3 td { color: #227C9D;font-size: larger; font-weight: 600;}
+
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1 class="h-text" style="color: #13a496; margin-bottom: 30px;">果彈Fun樂園<br>排行榜</h1>
+        <div class="center">
+            <p class="h-text" style="margin: 5px;">搜尋自己的名稱<br>看看你在第幾名吧～</p>
+        </div>
+        <div class="input-c">
+            <input id="searchInput" placeholder="搜尋名稱" oninput="render()">
+        </div>
+        <div class="menu"> 
+            <button data-type="point" onclick="setType('point')">累積點數</button>
+            <button data-type="link" onclick="setType('link')">蔬果連連</button>
+            <button data-type="harvest" onclick="setType('harvest')">採收達人</button>
+        </div>
 
-<h2>排行榜查詢系統</h2>
+        <div class="menu2" id="modeMenu">
+            <button data-mode="total" onclick="setMode('total')">累積</button>
+            <button data-mode="best" onclick="setMode('best')">最高</button>
+        </div>
 
-<div class="menu">
-    <button onclick="setType('point')">累積果果點數</button>
-    <button onclick="setType('link')">蔬果連連</button>
-    <button onclick="setType('harvest')">採收達人</button>
-</div>
+        <div id="loading" style="text-align:center; margin:20px; margin-top: 10%; font-size:18px;" >
+            資料載入中，請稍候...
+        </div>
+        <div class="loader" id="loader"></div>
 
-<div id="modeMenu" style="margin-bottom:10px; display:none;">
-    <button onclick="setMode('total')">累積</button>
-    <button onclick="setMode('best')">最高</button>
-</div>
+        <table id="rankTable" class="fade-in" style="display:none;">
+            <thead>
+                <tr>
+                    <th class="th-start">名次</th>
+                    <th>名稱</th>
+                    <th id="score" class="th-end">數值</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-<input id="searchInput" placeholder="搜尋名稱" oninput="render()">
-
-<table id="rankTable">
-    <thead>
-        <tr>
-            <th>名次</th>
-            <th>名稱</th>
-            <th>數值</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
 
 <script>
 
-// ⭐ Step 1：設定你的 Google Apps Script WebApp URL
-const API_URL = "https://script.google.com/macros/s/AKfycbx6Nuc3rRMzDdnaP62ykXUYsKaZ2lfQ7nnZmmzrdJTCy3TitfexgdHUAYnykh9ew6BV/exec";
+// Step 1：設定你的 Google Apps Script WebApp URL
+const API_URL = "https://script.google.com/macros/s/AKfycbx90UWZa8jave6W0HGdjJ6Yhs0LcLBbA4hEiasbtAmbn8-7SiFKqNW17HndoCxlgmDV/exec";
 
-// ⭐ 全部資料儲存
+// 全部資料儲存
 let allPlayers = [];
 
-// ⭐ 目前分類（point, link, harvest）
+// 目前分類（point, link, harvest）
 let currentType = "point";
 
-// ⭐ 目前模式（total / best）
+// 目前模式（total / best）
 let currentMode = "total";
 
 // ＝＝＝＝＝＝＝＝＝＝＝
 // Step 2：載入資料（僅一次）
 // ＝＝＝＝＝＝＝＝＝＝＝
 async function loadData() {
+
+    // 顯示載入提示
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("rankTable").style.display = "none";
+
     try {
         const res = await fetch(API_URL);
         const json = await res.json();
         allPlayers = json.data;
         render();
+        // 隱藏載入提示，顯示表格
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("loader").style.display = "none";
+
     } catch (e) {
-        alert("資料載入失敗：" + e);
+        document.getElementById("loading").innerText = "載入失敗，請重新整理頁面";
+        document.getElementById("loader").style.display = "none";
+        console.error(err);
     }
 }
-loadData();
+
 
 
 // ＝＝＝＝＝＝＝＝＝＝＝
@@ -118,17 +248,36 @@ loadData();
 function setType(type) {
     currentType = type;
 
-    // Link/Harvest 顯示模式選擇
-    document.getElementById("modeMenu").style.display =
-        (type === "point") ? "none" : "block";
+    // 更新主類別按鈕高亮
+    document.querySelectorAll(".menu button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.type === type);
+    });
 
+    // 顯示/隱藏模式選單
+    const modeMenu = document.getElementById("modeMenu");
+    const needMode = (type !== "point");
+    modeMenu.style.display = needMode ? "flex" : "none";
+
+    // 每次切換到 link/harvest 時預設為 total，並高亮 total
+    if (needMode) {
+        if (!currentMode) currentMode = "total"; 
+        setMode(currentMode);
+    }
     render();
 }
 
 function setMode(mode) {
     currentMode = mode;
+
+    // 更新模式按鈕高亮
+    document.querySelectorAll("#modeMenu button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === mode);
+    });
+
     render();
 }
+
+
 
 
 // ＝＝＝＝＝＝＝＝＝＝＝
@@ -140,11 +289,11 @@ function applyRanking(list) {
 
     list.forEach((p, i) => {
         if (p.score === lastScore) {
-            p.rank = lastRank;
-        } else {
-            p.rank = i + 1;
-            lastRank = p.rank;
-            lastScore = p.score;
+                p.rank = lastRank;
+            } else {
+                p.rank = i + 1;
+                lastRank = p.rank;
+                lastScore = p.score;
         }
     });
 }
@@ -154,7 +303,15 @@ function applyRanking(list) {
 // Step 5：資料渲染流程
 // ＝＝＝＝＝＝＝＝＝＝＝
 function render() {
+    
     if (allPlayers.length === 0) return;
+    
+    const score = document.getElementById("score");
+    if(currentType === 'point'){
+        score.innerText='點數';
+    } else {
+        score.innerText='分數';
+    }
 
     // 選擇排序欄位
     let key = "point_total";
@@ -166,10 +323,13 @@ function render() {
     }
 
     // 先複製資料
-    let list = allPlayers.map(p => ({
+    let list = allPlayers
+    .filter(p => p[key] !== '-' && p[key] !== '' && p[key] != null) // ★ 過濾掉 '-'
+    .map(p => ({
         name: p.name,
         score: Number(p[key]) || 0
     }));
+
 
     // 排序 (高 → 低)
     list.sort((a,b) => b.score - a.score);
@@ -183,8 +343,23 @@ function render() {
         list = list.filter(p => p.name.includes(keyword));
     }
 
-    // 顯示
     renderTable(list);
+    
+    // ＝＝＝＝動畫處理＝＝＝＝
+    const table = document.getElementById("rankTable");
+
+    // 若第一次顯示 → 顯示表格但保持透明
+    if (table.style.display === "none") {
+        table.style.display = "table";
+    }
+
+    table.classList.remove("show");
+
+    setTimeout(() => {
+        table.classList.add('show');
+    }, 0);
+
+    
 }
 
 
@@ -204,13 +379,28 @@ function renderTable(list) {
         if (player.rank === 3) tr.classList.add("rank-3");
 
         tr.innerHTML = `
-            <td>${player.rank}</td>
+            <td class="td-start">${player.rank}</td>
             <td>${player.name}</td>
-            <td>${player.score}</td>
+            <td class="td-end">${player.score}</td>
         `;
         tbody.appendChild(tr);
     });
 }
+
+window.onload = function () {
+    currentType = "point";
+    currentMode = "total";
+
+    // 高亮主類別按鈕
+    setType(currentType);
+
+    // 若不是 point，才需要設 mode
+    if (currentType !== "point") {
+        setMode(currentMode);
+    }
+
+    loadData();
+};
 
 </script>
 
