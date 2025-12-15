@@ -160,16 +160,25 @@
         .rank-2 td { color: #ff9d00;font-size: larger; font-weight: 600;}
         .rank-3 td { color: #227C9D;font-size: larger; font-weight: 600;}
 
+        #noResult {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #noResult.show {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="h-text" style="color: #13a496; margin-bottom: 30px;">果彈Fun樂園<br>排行榜</h1>
         <div class="center">
-            <p class="h-text" style="margin: 5px;">搜尋自己的名稱<br>看看你在第幾名吧～</p>
+            <p class="h-text" style="margin: 5px;">搜尋自己的名稱<br>看看你在第幾名吧～ヽ(●´∀`●)ﾉ</p>
         </div>
         <div class="input-c">
-            <input id="searchInput" placeholder="搜尋名稱" oninput="render()">
+            <input id="searchInput" placeholder="搜尋名稱">
         </div>
         <div class="menu"> 
             <button data-type="point" onclick="setType('point')">累積點數</button>
@@ -197,6 +206,9 @@
             </thead>
             <tbody></tbody>
         </table>
+        <div id="noResult" style="display:none; text-align:center; margin:20px; color:#999;">
+            沒有搜尋到符合的資料...(◞‸◟)
+        </div>
     </div>
 
 
@@ -342,11 +354,24 @@ function render() {
     if (keyword.length > 0) {
         list = list.filter(p => p.name.includes(keyword));
     }
+    
+    //判斷是否有資料
+    const table = document.getElementById("rankTable");
+    const noResult = document.getElementById("noResult");
 
+    if (list.length === 0) {
+        table.style.display = "none";
+        noResult.style.display = "block";
+        noResult.classList.add("show");
+        return; // 不繼續渲染表格
+    } else {
+        noResult.classList.remove("show");
+        noResult.style.display = "none";
+        table.style.display = "table";
+    }
     renderTable(list);
     
     // ＝＝＝＝動畫處理＝＝＝＝
-    const table = document.getElementById("rankTable");
 
     // 若第一次顯示 → 顯示表格但保持透明
     if (table.style.display === "none") {
@@ -400,6 +425,20 @@ window.onload = function () {
     }
 
     loadData();
+
+    document.getElementById("searchInput").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            render();
+        }
+    });
+
+    document.getElementById("searchInput").addEventListener("input", function (e) {
+        if (this.value === "") {
+            render(); // 清空時自動還原
+        }
+    });
+
+
 };
 
 </script>
